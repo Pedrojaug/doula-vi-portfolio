@@ -1,4 +1,4 @@
-// Initialize Lucide Icons
+// Initialize Lucide Icons & Components
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof lucide !== 'undefined') {
     lucide.createIcons();
@@ -9,7 +9,32 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Initialize Scroll Spy
   initScrollSpy();
+
+  // Initialize Scroll Reveal Animations
+  initScrollReveal();
 });
+
+// SCROLL REVEAL ANIMATION OBSERVER
+function initScrollReveal() {
+  const revealElements = document.querySelectorAll('.reveal-on-scroll');
+  if (!revealElements.length) return;
+
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        // Unobserve after animating once
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    root: null,
+    threshold: 0.12,
+    rootMargin: '0px 0px -50px 0px'
+  });
+
+  revealElements.forEach(el => revealObserver.observe(el));
+}
 
 // STICKY HEADER & SCROLL SPY
 const header = document.getElementById('header');
@@ -28,7 +53,6 @@ window.addEventListener('scroll', () => {
   let current = '';
   sections.forEach(section => {
     const sectionTop = section.offsetTop;
-    const sectionHeight = section.clientHeight;
     // Offset standard: 150px
     if (window.scrollY >= (sectionTop - 150)) {
       current = section.getAttribute('id');
